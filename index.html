@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CoBPE represents lexical bases and reusable surface modifiers in a single structured token, shortening language-model sequences while improving performance.">
+    <meta property="og:title" content="CoBPE: Compositional Tokenization for Efficient Language Models">
+    <meta property="og:description" content="CoBPE moves reusable surface structure from the token sequence into structured token representations.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://co-bpe.github.io/">
+    <meta property="og:site_name" content="CoBPE">
+    <meta property="og:image" content="https://co-bpe.github.io/images/main_example.png">
+    <meta property="og:image:width" content="2203">
+    <meta property="og:image:height" content="577">
+    <meta property="og:image:alt" content="Standard BPE uses 18 positions for a sample sentence, while CoBPE uses 9 structured positions.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="CoBPE: Compositional Tokenization for Efficient Language Models">
+    <meta name="twitter:description" content="CoBPE moves reusable surface structure from the token sequence into structured token representations.">
+    <meta name="twitter:image" content="https://co-bpe.github.io/images/main_example.png">
+    <meta name="twitter:image:alt" content="Standard BPE uses 18 positions for a sample sentence, while CoBPE uses 9 structured positions.">
+    <meta name="theme-color" content="#2166d1">
+    <link rel="canonical" href="https://co-bpe.github.io/">
+    <title>CoBPE: Compositional Tokenization for Efficient Language Models</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&amp;family=Noto+Sans+Mono&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ScholarlyArticle",
+      "name": "More Than Words: Compositional Tokenization for Efficient Language Models",
+      "headline": "More Than Words: Compositional Tokenization for Efficient Language Models",
+      "description": "CoBPE represents lexical bases and reusable surface modifiers in a single structured token, shortening language-model sequences while improving performance.",
+      "url": "https://co-bpe.github.io/",
+      "image": "https://co-bpe.github.io/images/main_example.png",
+      "inLanguage": "en",
+      "author": [
+        {
+          "@type": "Person",
+          "name": "Yuval Reif",
+          "affiliation": {
+            "@type": "CollegeOrUniversity",
+            "name": "The Hebrew University of Jerusalem",
+            "url": "https://www.huji.ac.il/"
+          }
+        },
+        {
+          "@type": "Person",
+          "name": "Guy Kaplan",
+          "affiliation": {
+            "@type": "CollegeOrUniversity",
+            "name": "The Hebrew University of Jerusalem",
+            "url": "https://www.huji.ac.il/"
+          }
+        },
+        {
+          "@type": "Person",
+          "name": "Roy Schwartz",
+          "affiliation": {
+            "@type": "CollegeOrUniversity",
+            "name": "The Hebrew University of Jerusalem",
+            "url": "https://www.huji.ac.il/"
+          }
+        }
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "Compositional tokenization"
+      },
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "CoBPE",
+        "url": "https://co-bpe.github.io/"
+      }
+    }
+    </script>
+</head>
+<body>
+    <section class="hero">
+        <div class="hero-body">
+            <div class="container is-max-desktop">
+                <div class="columns is-centered">
+                    <div class="column has-text-centered">
+                        <p class="method-name">CoBPE</p>
+                        <h1 class="title is-1 publication-title">More Than Words: Compositional Tokenization for Efficient Language Models</h1>
+                        <div class="is-size-5 publication-authors">
+                            <span class="author-block">Yuval Reif,</span>
+                            <span class="author-block">Guy Kaplan,</span>
+                            <span class="author-block">Roy Schwartz</span>
+                        </div>
+                        <div class="is-size-5 publication-authors">
+                            <span class="author-block">The Hebrew University of Jerusalem</span>
+                        </div>
+                        <div class="publication-links">
+                            <span class="link-block">
+                                <span class="button is-normal is-rounded is-light unavailable-link" title="Paper coming soon">
+                                    <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                                    <span>Paper coming soon</span>
+                                </span>
+                            </span>
+                            <span class="link-block">
+                                <span class="button is-normal is-rounded is-light unavailable-link" title="Code will be released upon publication">
+                                    <span class="icon"><i class="fab fa-github"></i></span>
+                                    <span>Code coming soon</span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="tldr">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered">
+                <div class="column is-four-fifths">
+                    <div class="content is-size-5">
+                        <strong>TL;DR:</strong> We introduce CoBPE, a compositional tokenizer that packages lexical tokens with nearby function words and punctuation, representing the same text with 30% fewer sequence positions than BPE. Models trained from scratch with CoBPE at 780M and 1.3B parameters outperform BPE by 1.3 points across a 30-task downstream suite under matched training compute, while the shorter sequences also translate into faster training and inference.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered">
+                <div class="column is-full-width">
+                    <h2 class="title is-3">The idea</h2>
+                    <div class="content has-text-justified">
+                        <p>Standard BPE represents function words, punctuation, capitalization, and lexical content along the same one-dimensional token sequence. Even when these elements form a predictable local pattern, each consumes a separate position and incurs another model step.</p>
+                        <figure class="image figure-wide">
+                            <img src="images/main_example.png" alt="Standard BPE uses 18 positions for a sample sentence, while compositional BPE uses 9 structured positions.">
+                        </figure>
+                        <p>CoBPE factors this local structure into reusable modifiers attached to lexical base tokens. In the example above, prepositions, determiners, capitalization, spacing, and punctuation are represented alongside their neighboring lexical bases, reducing the sequence from 18 positions to 9 without discarding the original text.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-tinted">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered">
+                <div class="column is-full-width">
+                    <h2 class="title is-3">Method overview</h2>
+                    <div class="content has-text-justified">
+                        <figure class="image figure-wide">
+                            <img src="images/method_illustration.png" alt="Overview of CoBPE input composition and joint output prediction">
+                        </figure>
+                        <p class="has-text-centered figure-caption">At input, modifier embeddings are added to the base embedding. At output, the model predicts a lexical base followed by modifier values conditioned on that base.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered">
+                <div class="column is-full-width">
+                    <h2 class="title is-3">Main findings</h2>
+                    <div class="findings-list">
+                        <article class="finding">
+                            <div class="finding-number">30%</div>
+                            <div class="finding-copy">
+                                <h3 class="title is-5">Fewer sequence positions</h3>
+                                <p>Across both model scales, CoBPE represents the same text with 30% fewer positions than standard BPE. The compression comes from composing frequent grammatical markers and surface variation with lexical bases.</p>
+                            </div>
+                        </article>
+                        <article class="finding">
+                            <div class="finding-number">+1.2 / +1.3</div>
+                            <div class="finding-copy">
+                                <h3 class="title is-5">Better performance at matched training compute</h3>
+                                <p>CoBPE improves the average score on a 30-task evaluation suite by 1.2 points at 780M parameters and 1.3 points at 1.3B parameters, while keeping the architecture, training recipe, and token budget fixed.</p>
+                            </div>
+                        </article>
+                        <article class="finding">
+                            <div class="finding-number">1.28×</div>
+                            <div class="finding-copy">
+                                <h3 class="title is-5">Compression translates into end-to-end speed</h3>
+                                <p>In controlled generation experiments, fewer decoding steps yield a 1.28× inference speedup. In the nanochat speedrun setting, CoBPE also reaches the target capability in 30.4% less training time.</p>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-tinted paper-abstract">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered">
+                <div class="column is-four-fifths">
+                    <p class="abstract-label">From the paper</p>
+                    <h2 class="title is-3 abstract-title">Paper abstract</h2>
+                    <div class="content has-text-justified abstract-copy">
+                        <p>Language models process and generate text sequentially in <em>token</em> units, and the tokenizer determines how much text each inference step covers. Under standard tokenization, a short English phrase such as “On the table.” is usually produced as four separate predictions for the preposition (<em>On</em>), article (<em>the</em>), noun (<em>table</em>), and punctuation (<em>.</em>), where each consumes a sequence position and incurs inference costs.</p>
+                        <p>We introduce <strong>CoBPE</strong>, a compositional tokenization approach that represents such phrases as a lexical base token (<em>table</em>) attached with a small set of reusable surface modifiers, composed in embedding space at input and predicted jointly at output. In controlled pretraining from scratch at 780M and 1.3B scales, CoBPE shortens sequences by 30% and improves downstream performance by 1.2 points relative to standard BPE under matched training compute.</p>
+                        <p>Our results suggest that part of what is now expressed through token sequences can instead be modeled through structured representations, opening a broad design space for more token-efficient and capable language models.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered">
+                <div class="column is-full-width">
+                    <h2 class="title is-3">Citation</h2>
+                    <div class="bibtex-box">
+<pre><code>@misc{reif2026morethanwords,
+  title  = {More Than Words: Compositional Tokenization for
+            Efficient Language Models},
+  author = {Reif, Yuval and Kaplan, Guy and Schwartz, Roy},
+  year   = {2026}
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="content has-text-centered">
+                <p>Research from the <a href="https://schwartz-lab-huji.github.io/">Schwartz Lab</a> at the Hebrew University of Jerusalem.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
