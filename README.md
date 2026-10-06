@@ -1,6 +1,11 @@
-# More Than Words project website
+# CoBPE project website
 
-Static project page for **More Than Words: Compositional Tokenization for Efficient Language Models**.
+Static project page for **More Than Words: Compositional Tokenization for Efficient Language Models** (Reif, Kaplan, Schwartz; COLM 2026), served at <https://co-bpe.github.io>.
+
+- Paper: <https://arxiv.org/abs/2610.05597>
+- Code: <https://github.com/schwartz-lab-NLP/cobpe>
+
+The page is plain HTML and CSS (`index.html`, `style.css`), with no build step. The token examples, method diagram and result charts are drawn in HTML/SVG in the poster's colors, so text stays sharp and editable; only the compression curve (`images/compression.png`) and the social-card image (`images/main_example.png`) are images.
 
 ## Preview locally
 
@@ -10,10 +15,6 @@ python3 -m http.server 8000
 
 Then open <http://localhost:8000>.
 
-## Publish with GitHub Pages
+## When the models are released
 
-1. Create the intended GitHub repository.
-2. Push the contents of this directory to its `main` branch.
-3. In the repository settings, open **Pages** and deploy from the `main` branch at `/ (root)`.
-
-The paper and code buttons in `index.html` should be replaced with links when their public URLs are available.
+Replace the two "coming soon" placeholders in `index.html` (the **Models** button in the header and the **Models** card under "Paper, code and models") with links to the weights.
