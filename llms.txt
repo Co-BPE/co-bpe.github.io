@@ -1,0 +1,38 @@
+# CoBPE: More Than Words: Compositional Tokenization for Efficient Language Models
+
+> CoBPE is a compositional tokenizer for language models. It attaches articles, prepositions, punctuation, capitalization and leading spaces to a neighboring lexical base token as modifiers, so the model reads and predicts them in one step. Paper by Yuval Reif, Guy Kaplan and Roy Schwartz (The Hebrew University of Jerusalem), COLM 2026.
+
+## Key results
+
+- Determiners, prepositions and punctuation take up 29.8% of token positions in English web text (FineWeb) under the GPT-4 tokenizer.
+- CoBPE represents the same text in 30% fewer positions than BPE (SuperBPE: 15%), at a 32k vocabulary. The original text is reconstructed exactly.
+- Models pretrained from scratch on English (ClimbMix) with matched training compute: the 30-task average improves from 30.4 to 31.6 at 780M parameters and from 33.3 to 34.6 at 1.3B (SuperBPE: 30.4 at 780M).
+- Generation of the same text is 1.28× faster (32.5% fewer decoding steps). On the nanochat speedrun, CoBPE reaches GPT-2-level CORE in 6.45 h instead of 7.92 h (1.23×) on 8× L40S.
+- Beyond English, CoBPE shortens sequences by 18.0–31.8% (Spanish, German, Hindi, Indonesian).
+
+## Method
+
+- Input: the embedding of a compound token is the sum of its base-token embedding and one embedding per active modifier.
+- Output: the model predicts the base token, then each modifier group conditioned on that base (one softmax per group).
+- About 100 English modifiers in 8 groups; under 0.1% additional parameters. The transformer backbone is unchanged.
+
+## Links
+
+- [Project page](https://co-bpe.github.io/)
+- [Paper (arXiv 2610.05597)](https://arxiv.org/abs/2610.05597)
+- [OpenReview](https://openreview.net/forum?id=Yw16kddexd)
+- [Code (tokenizer, model integration, paper experiments)](https://github.com/schwartz-lab-NLP/cobpe)
+- Model weights: coming soon.
+- Related: [Vocab Diet](https://vocabdiet.github.io/) (Findings of ACL 2026), which composes word forms from base words and transformation vectors.
+
+## Citation
+
+```bibtex
+@inproceedings{reif2026more,
+  title={More Than Words: Compositional Tokenization for Efficient Language Models},
+  author={Yuval Reif and Guy Kaplan and Roy Schwartz},
+  booktitle={Third Conference on Language Modeling},
+  year={2026},
+  url={https://openreview.net/forum?id=Yw16kddexd}
+}
+```

@@ -27,30 +27,147 @@
     <meta name="citation_conference_title" content="Third Conference on Language Modeling">
     <meta name="citation_arxiv_id" content="2610.05597">
     <meta name="citation_pdf_url" content="https://arxiv.org/pdf/2610.05597">
+    <meta name="citation_abstract_html_url" content="https://arxiv.org/abs/2610.05597">
+    <meta name="author" content="Yuval Reif, Guy Kaplan, Roy Schwartz">
+    <meta name="keywords" content="CoBPE, compositional tokenization, tokenization, byte-pair encoding, BPE, tokenizer, language models, LLM, sequence compression, efficient language models, SuperBPE">
+    <link rel="icon" href="images/robot.svg" type="image/svg+xml">
+    <link rel="alternate" type="text/markdown" href="llms.txt" title="Plain-text summary for LLMs and agents">
     <link rel="canonical" href="https://co-bpe.github.io/">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&amp;family=Noto+Sans+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@1,8..60,400&amp;display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
     <link rel="stylesheet" href="style.css">
     <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
     {
-      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "@id": "https://co-bpe.github.io/",
+      "url": "https://co-bpe.github.io/",
+      "name": "More Than Words: Compositional Tokenization for Efficient Language Models",
+      "about": {
+        "@id": "https://co-bpe.github.io/#paper"
+      },
+      "mainEntity": {
+        "@id": "https://co-bpe.github.io/#paper"
+      }
+    },
+    {
       "@type": "ScholarlyArticle",
+      "@id": "https://co-bpe.github.io/#paper",
       "name": "More Than Words: Compositional Tokenization for Efficient Language Models",
       "headline": "More Than Words: Compositional Tokenization for Efficient Language Models",
-      "description": "CoBPE represents lexical base tokens and reusable surface modifiers (determiners, prepositions, punctuation, capitalization, leading space) as one compound token, shortening language-model sequences by 30% while improving downstream performance at matched training compute.",
-      "url": "https://co-bpe.github.io/",
-      "sameAs": ["https://arxiv.org/abs/2610.05597", "https://github.com/schwartz-lab-NLP/cobpe"],
-      "datePublished": "2026-10-04",
-      "image": "https://co-bpe.github.io/images/main_example.png",
-      "inLanguage": "en",
+      "alternateName": "CoBPE",
+      "abstract": "Language models process and generate text sequentially in token units, and the tokenizer determines how much text each inference step covers. Under standard tokenization, a short English phrase such as “On the table.” is usually produced as four separate predictions for the preposition (On), article (the), noun (table), and punctuation (.), where each consumes a sequence position and adds inference cost. We introduce CoBPE, a compositional tokenization approach that represents such phrases as a lexical base token (table) attached with a small set of reusable surface modifiers, composed in embedding space at input and predicted jointly at output. In controlled pretraining from scratch at 780M and 1.3B scales, CoBPE shortens sequences by 30% and improves average downstream performance by 1.2 points relative to standard BPE under matched training compute. Our results suggest that part of what is now expressed through token sequences can instead be modeled through structured representations, opening a broad design space for more token-efficient and capable language models.",
       "author": [
-        {"@type": "Person", "name": "Yuval Reif", "affiliation": {"@type": "CollegeOrUniversity", "name": "The Hebrew University of Jerusalem"}},
-        {"@type": "Person", "name": "Guy Kaplan", "affiliation": {"@type": "CollegeOrUniversity", "name": "The Hebrew University of Jerusalem"}},
-        {"@type": "Person", "name": "Roy Schwartz", "affiliation": {"@type": "CollegeOrUniversity", "name": "The Hebrew University of Jerusalem"}}
+        {
+          "@type": "Person",
+          "name": "Yuval Reif",
+          "affiliation": {
+            "@type": "CollegeOrUniversity",
+            "name": "The Hebrew University of Jerusalem",
+            "url": "https://www.huji.ac.il/"
+          }
+        },
+        {
+          "@type": "Person",
+          "name": "Guy Kaplan",
+          "affiliation": {
+            "@type": "CollegeOrUniversity",
+            "name": "The Hebrew University of Jerusalem",
+            "url": "https://www.huji.ac.il/"
+          }
+        },
+        {
+          "@type": "Person",
+          "name": "Roy Schwartz",
+          "affiliation": {
+            "@type": "CollegeOrUniversity",
+            "name": "The Hebrew University of Jerusalem",
+            "url": "https://www.huji.ac.il/"
+          }
+        }
       ],
-      "about": {"@type": "Thing", "name": "Compositional tokenization"}
+      "datePublished": "2026-10-04",
+      "inLanguage": "en",
+      "keywords": [
+        "CoBPE",
+        "compositional tokenization",
+        "tokenization",
+        "byte-pair encoding",
+        "BPE",
+        "tokenizer",
+        "language models",
+        "LLM",
+        "sequence compression",
+        "efficient language models",
+        "SuperBPE"
+      ],
+      "url": "https://co-bpe.github.io/",
+      "sameAs": [
+        "https://arxiv.org/abs/2610.05597",
+        "https://openreview.net/forum?id=Yw16kddexd"
+      ],
+      "image": "https://co-bpe.github.io/images/main_example.png",
+      "publication": {
+        "@type": "PublicationEvent",
+        "name": "Third Conference on Language Modeling (COLM 2026)"
+      },
+      "identifier": [
+        {
+          "@type": "PropertyValue",
+          "propertyID": "arXiv",
+          "value": "2610.05597"
+        }
+      ]
+    },
+    {
+      "@type": "SoftwareSourceCode",
+      "@id": "https://github.com/schwartz-lab-NLP/cobpe",
+      "name": "CoBPE code",
+      "description": "CoBPE tokenizer (Rust runtime), model integration, and scripts for the paper's experiments.",
+      "codeRepository": "https://github.com/schwartz-lab-NLP/cobpe",
+      "programmingLanguage": [
+        "Python",
+        "Rust"
+      ],
+      "license": "https://www.apache.org/licenses/LICENSE-2.0",
+      "author": [
+        {
+          "@type": "Person",
+          "name": "Yuval Reif",
+          "affiliation": {
+            "@type": "CollegeOrUniversity",
+            "name": "The Hebrew University of Jerusalem",
+            "url": "https://www.huji.ac.il/"
+          }
+        },
+        {
+          "@type": "Person",
+          "name": "Guy Kaplan",
+          "affiliation": {
+            "@type": "CollegeOrUniversity",
+            "name": "The Hebrew University of Jerusalem",
+            "url": "https://www.huji.ac.il/"
+          }
+        },
+        {
+          "@type": "Person",
+          "name": "Roy Schwartz",
+          "affiliation": {
+            "@type": "CollegeOrUniversity",
+            "name": "The Hebrew University of Jerusalem",
+            "url": "https://www.huji.ac.il/"
+          }
+        }
+      ],
+      "isBasedOn": {
+        "@id": "https://co-bpe.github.io/#paper"
+      }
     }
+  ]
+}
     </script>
 </head>
 <body>
@@ -260,6 +377,9 @@
 cd cobpe
 uv sync --locked --extra cpu
 uv run --locked --extra cpu python -m cobpe check-install</code></pre>
+
+    <h2>Related</h2>
+    <p><a href="https://vocabdiet.github.io/">Vocab Diet</a> (Findings of ACL 2026) composes word forms such as <em>walked</em> from a base word and transformation vectors (<em>walk</em> + <em>past tense</em>). CoBPE uses the same input and output parameterization for grammatical markers instead of morphology.</p>
 
     <h2 id="citation">Citation</h2>
 <pre><code>@inproceedings{reif2026more,
