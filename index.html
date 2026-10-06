@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CoBPE: Compositional Tokenization for Efficient Language Models</title>
-    <meta name="description" content="CoBPE attaches articles, prepositions and punctuation to a neighboring base token as modifiers, so a language model reads and predicts them in one step. Sequences get 30% shorter, and models trained from scratch score higher at matched compute. COLM 2026.">
+    <meta name="description" content="CoBPE attaches articles, prepositions, punctuation, capitalization and leading spaces to a neighboring base token, so a language model reads and predicts them in one step. Sequences are 30% shorter than with BPE, and models score higher at matched training compute.">
     <meta property="og:title" content="CoBPE: Compositional Tokenization for Efficient Language Models">
-    <meta property="og:description" content="Articles, prepositions and punctuation take up ~30% of tokens in English text. CoBPE attaches them to a base token as modifiers: 30% shorter sequences and better models at matched compute.">
+    <meta property="og:description" content="CoBPE attaches articles, prepositions and punctuation to a neighboring base token: 30% shorter sequences and better models at matched compute. COLM 2026.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://co-bpe.github.io/">
     <meta property="og:site_name" content="CoBPE">
@@ -16,7 +16,7 @@
     <meta property="og:image:alt" content="Standard BPE uses 18 tokens for the opening of The Hobbit, while CoBPE uses 9 compound tokens.">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="CoBPE: Compositional Tokenization for Efficient Language Models">
-    <meta name="twitter:description" content="Articles, prepositions and punctuation take up ~30% of tokens in English text. CoBPE attaches them to a base token as modifiers: 30% shorter sequences and better models at matched compute.">
+    <meta name="twitter:description" content="CoBPE attaches articles, prepositions and punctuation to a neighboring base token: 30% shorter sequences and better models at matched compute. COLM 2026.">
     <meta name="twitter:image" content="https://co-bpe.github.io/images/main_example.png">
     <meta name="twitter:image:alt" content="Standard BPE uses 18 tokens for the opening of The Hobbit, while CoBPE uses 9 compound tokens.">
     <meta name="citation_title" content="More Than Words: Compositional Tokenization for Efficient Language Models">
@@ -27,11 +27,8 @@
     <meta name="citation_conference_title" content="Conference on Language Modeling (COLM)">
     <meta name="citation_arxiv_id" content="2610.05597">
     <meta name="citation_pdf_url" content="https://arxiv.org/pdf/2610.05597">
-    <meta name="theme-color" content="#1d1b1a">
     <link rel="canonical" href="https://co-bpe.github.io/">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@1,8..60,400&amp;display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&amp;family=Noto+Sans+Mono:wght@400;700&amp;family=Source+Serif+4:ital,opsz,wght@1,8..60,400&amp;display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
     <link rel="stylesheet" href="style.css">
@@ -58,174 +55,79 @@
 </head>
 <body>
 
-<header class="hero">
-    <div class="wrap">
-        <h1><em>More Than Words:</em> <span class="sub"><span class="co">Compositional Tokenization</span> for Efficient Language Models</span></h1>
-        <p class="authors"><span>Yuval Reif</span> <span>Guy Kaplan</span> <span>Roy Schwartz</span></p>
-        <p class="affil">The Hebrew University of Jerusalem</p>
-        <span class="venue">COLM 2026</span>
-        <nav class="links" aria-label="Paper resources">
-            <a class="btn" href="https://arxiv.org/abs/2610.05597"><i class="ai ai-arxiv"></i> arXiv</a>
-            <a class="btn" href="https://arxiv.org/pdf/2610.05597"><i class="fas fa-file-pdf"></i> Paper</a>
-            <a class="btn" href="https://github.com/schwartz-lab-NLP/cobpe"><i class="fab fa-github"></i> Code</a>
-            <span class="btn soon" title="Model weights will be released here soon"><i class="fas fa-cube"></i> Models <small>· coming soon</small></span>
-            <a class="btn" href="#citation"><i class="fas fa-quote-right"></i> BibTeX</a>
-        </nav>
-    </div>
+<header>
+    <h1>More Than Words: Compositional Tokenization for Efficient Language Models</h1>
+    <p class="authors"><span>Yuval Reif</span> <span>Guy Kaplan</span> <span>Roy Schwartz</span></p>
+    <p class="affil">The Hebrew University of Jerusalem</p>
+    <p class="affil">COLM 2026</p>
+    <nav class="links">
+        <a class="button" href="https://arxiv.org/abs/2610.05597"><i class="ai ai-arxiv"></i> arXiv</a>
+        <a class="button" href="https://arxiv.org/pdf/2610.05597"><i class="fas fa-file-pdf"></i> Paper</a>
+        <a class="button" href="https://github.com/schwartz-lab-NLP/cobpe"><i class="fab fa-github"></i> Code</a>
+        <span class="button disabled" title="Model weights will be released soon"><i class="fas fa-cube"></i> Models (coming soon)</span>
+    </nav>
 </header>
 
-<section class="hook" aria-label="Summary">
-    <div class="wrap">
-        <p class="hook-claim">Articles, prepositions &amp; punctuation like <span class="hi">the</span>, <span class="hi">on</span> and <span class="hi">,</span> take up <span class="num">30% of the tokens</span> in English text.</p>
-        <p class="hook-support">In BPE, each one costs a <b>full forward pass</b>, the same as a content word.</p>
-        <p class="hook-note">29.8% of token positions on English web text (FineWeb) with GPT-4's tokenizer.</p>
+<main>
+    <p class="tldr"><strong>TL;DR:</strong> We introduce CoBPE, a tokenizer that attaches articles, prepositions, punctuation, capitalization and leading spaces to a neighboring word, so the model reads and predicts them together in one step. CoBPE represents text in 30% fewer positions than BPE. Models trained from scratch with CoBPE at 780M and 1.3B parameters outperform BPE by 1.2 and 1.3 points on a 30-task suite under matched training compute, and train and generate faster.</p>
 
-        <div class="hook-example" aria-label="On the table. as 4 BPE tokens versus 1 CoBPE token">
-            <div>
-                <div class="lab">4 BPE tokens</div>
-                <div class="chips"><span class="chip lg">On</span><span class="chip lg">_the</span><span class="chip lg">_table</span><span class="chip lg">.</span></div>
-                <div class="cap">= 4 forward passes</div>
-            </div>
-            <div class="arrow" aria-hidden="true">→</div>
-            <div style="text-align:center">
-                <div class="lab" style="color:var(--accent-hook)">1 CoBPE token</div>
-                <div class="compound-big">
-                    <span class="chip prep">On</span>
-                    <span class="chip det">the</span>
-                    <span class="chip punct">.</span>
-                    <span class="chip base xl">table</span>
-                </div>
-                <div class="cap">= 1 forward pass</div>
-            </div>
+    <h2>The idea</h2>
+    <p>BPE gives every token its own sequence position. Determiners, prepositions and punctuation take up 29.8% of the positions in English web text under GPT-4's tokenizer, and each costs a full model step, the same as a content word.</p>
+
+    <figure>
+        <p class="quote">“In a hole in the ground, there lived a hobbit. Not a dirty, wet hole, …”</p>
+        <div class="row-label">BPE <span>(18 tokens)</span></div>
+        <div class="chips">
+            <span class="chip prep">In</span><span class="chip det">_a</span><span class="chip">_hole</span><span class="chip prep">_in</span><span class="chip det">_the</span><span class="chip">_ground</span><span class="chip punct">,</span><span class="chip">_there</span><span class="chip">_lived</span><span class="chip det">_a</span><span class="chip">_hob</span><span class="chip">bit</span><span class="chip punct">.</span><span class="chip">_Not</span><span class="chip det">_a</span><span class="chip">_dirty</span><span class="chip punct">,</span><span class="chip">_wet</span>
         </div>
-
-        <p class="hook-idea"><span class="hi">CoBPE</span> attaches them to a <em>base</em> token as <em>modifiers</em>, encoded and predicted together in one step.</p>
-
-        <p class="hook-lead">Compared to <span class="bpe">BPE</span>, at matched training compute, <span class="co">CoBPE</span> gives:</p>
-        <div class="takeaways">
-            <div class="takeaway">
-                <div class="big">30%</div>
-                <div class="what">shorter sequences</div>
-                <p>The same text in 30% fewer positions (SuperBPE: 15%), with nothing lost: the original text is reconstructed exactly.</p>
-            </div>
-            <div class="takeaway">
-                <div class="big">+1.2 / +1.3</div>
-                <div class="what">points downstream</div>
-                <p>30-task average for 780M and 1.3B models trained from scratch on English.</p>
-            </div>
-            <div class="takeaway">
-                <div class="big">1.28× · 1.23×</div>
-                <div class="what">faster generation · training</div>
-                <p>Fewer, slightly costlier steps: shorter sequences more than pay for the extra prediction head.</p>
-            </div>
+        <div class="row-label">CoBPE <span>(9 tokens)</span></div>
+        <div class="compounds">
+            <div class="compound"><span class="chip base">hole</span><span class="chip prep tag">prep: in</span><span class="chip cap tag">cap: prep</span><span class="chip det tag">det: a</span></div>
+            <div class="compound"><span class="chip base">ground</span><span class="chip space tag">_</span><span class="chip prep tag">prep: in</span><span class="chip det tag">det: the</span><span class="chip punct tag">suffix: ,</span></div>
+            <div class="compound"><span class="chip base">there</span><span class="chip space tag">_</span></div>
+            <div class="compound"><span class="chip base">lived</span><span class="chip space tag">_</span></div>
+            <div class="compound"><span class="chip base">hob</span><span class="chip space tag">_</span><span class="chip det tag">det: a</span></div>
+            <div class="compound"><span class="chip base">bit</span><span class="chip punct tag">suffix: .</span></div>
+            <div class="compound"><span class="chip base">not</span><span class="chip space tag">_</span><span class="chip cap tag">cap</span></div>
+            <div class="compound"><span class="chip base">dirty</span><span class="chip space tag">_</span><span class="chip det tag">det: a</span><span class="chip punct tag">suffix: ,</span></div>
+            <div class="compound"><span class="chip base">wet</span><span class="chip space tag">_</span></div>
         </div>
-    </div>
-</section>
+        <div class="legend">Modifiers: <span class="chip space tag">leading space</span><span class="chip cap tag">capitalization</span><span class="chip det tag">determiner</span><span class="chip prep tag">preposition</span><span class="chip punct tag">punctuation</span></div>
+        <figcaption>BPE and CoBPE tokenizations of the same text. Highlighted BPE tokens are grammatical markers; <code>_</code> marks a leading space.</figcaption>
+    </figure>
 
-<section class="block" id="problem">
-    <div class="wrap narrow">
-        <p class="kicker">1 · The problem</p>
-        <h2>Where do the tokens go?</h2>
-        <p class="lead">A BPE tokenizer gives most English words a single token. But the small words between them get one too: <span class="chip det">_the</span> costs the model exactly as much as <span class="chip">_ground</span>.</p>
-        <div class="stack" role="img" aria-label="Share of token positions: determiners 8.1%, prepositions 9.5%, punctuation 12.2%, other 70.2%">
-            <div class="det" style="width:8.1%">8.1</div>
-            <div class="prep" style="width:9.5%">9.5</div>
-            <div class="punct" style="width:12.2%">12.2</div>
-            <div class="other" style="width:70.2%">other tokens</div>
-        </div>
-        <div class="stack-legend">
-            <span class="brace">29.8% of positions</span>
-            <span><b>determiners</b> <code>the, a, this</code></span>
-            <span><b>prepositions</b> <code>in, of, on</code></span>
-            <span><b>punctuation</b> <code>. , ( ) : "</code></span>
-        </div>
-        <p class="small muted" style="margin-top:6px">English FineWeb documents tokenized with GPT-4's tokenizer (paper §2, Figure 2).</p>
+    <p>CoBPE represents these markers as modifiers attached to a lexical base token. In the example above, prepositions, determiners, capitalization, leading spaces and punctuation attach to their neighboring bases, reducing the sequence from 18 positions to 9. The original text can still be reconstructed exactly.</p>
+    <p>Multi-word tokens, as in SuperBPE, also shorten sequences, but each phrase needs its own vocabulary entry. CoBPE modifiers are shared: the same <code>the</code> attaches to any base, and a word keeps one base token across its surface forms.</p>
 
-        <h3>Bigger tokens?</h3>
-        <p>One existing fix is to let BPE merge across word boundaries, so a phrase becomes one token (SuperBPE; Boundless BPE). That does shorten sequences, but every phrase needs <b>its own vocabulary entry</b>, and nothing is shared between them:</p>
-        <div class="chips" style="margin:6px 0 14px"><span class="chip">the_ground</span><span class="chip">in_the_ground,</span><span class="chip">the_earth</span><span class="chip">On_the_floor</span><span class="chip">in_the_ground?</span><span class="chip" style="border-style:dashed">…</span></div>
-        <p class="question">Can we get shorter sequences without a separate entry for every phrase?</p>
-    </div>
-</section>
+    <figure class="scroll-x">
+        <table class="ladder">
+            <thead><tr><th>Text</th><th>BPE</th><th></th><th>CoBPE</th></tr></thead>
+            <tbody>
+                <tr><td class="text">the ground</td><td><div class="chips"><span class="chip">the</span><span class="chip">_ground</span></div></td><td class="n">2</td>
+                    <td><div class="chips"><span class="chip base">ground</span><span class="chip det tag">det: the</span></div></td></tr>
+                <tr><td class="text">The Ground</td><td><div class="chips"><span class="chip">_The</span><span class="chip">_Ground</span></div></td><td class="n">2</td>
+                    <td><div class="chips"><span class="chip base">ground</span><span class="chip space tag">_</span><span class="chip cap tag">cap</span><span class="chip det tag">det: the</span><span class="chip cap tag">cap: det</span></div></td></tr>
+                <tr><td class="text">In the ground</td><td><div class="chips"><span class="chip">In</span><span class="chip">_the</span><span class="chip">_ground</span></div></td><td class="n">3</td>
+                    <td><div class="chips"><span class="chip base">ground</span><span class="chip prep tag">prep: in</span><span class="chip cap tag">cap: prep</span><span class="chip det tag">det: the</span></div></td></tr>
+                <tr><td class="text">(in the ground)</td><td><div class="chips"><span class="chip">(</span><span class="chip">in</span><span class="chip">_the</span><span class="chip">_ground</span><span class="chip">)</span></div></td><td class="n">5</td>
+                    <td><div class="chips"><span class="chip base">ground</span><span class="chip punct tag">prefix: (</span><span class="chip prep tag">prep: in</span><span class="chip det tag">det: the</span><span class="chip punct tag">suffix: )</span></div></td></tr>
+            </tbody>
+        </table>
+        <figcaption>BPE needs 2–5 tokens and several spellings of <code>ground</code>. CoBPE always uses one compound token with the same base.</figcaption>
+    </figure>
 
-<section class="block tinted" id="idea">
-    <div class="wrap">
-        <div class="narrow" style="margin:0 auto">
-            <p class="kicker">2 · The idea</p>
-            <h2>Attach, don't merge</h2>
-            <p class="lead">CoBPE keeps the content word as a <b>base token</b> and attaches the markers around it as <b>modifiers</b>: determiner, preposition, punctuation before and after, plus capitalization and the leading space. Base and modifiers together form one <b>compound token</b>. Because modifiers are separate from the base, the same <span class="chip det tag">the</span> is reused with every word.</p>
-        </div>
+    <h2>Method</h2>
+    <p>CoBPE changes only how tokens enter and leave the model. At the input, the model sums the embeddings of the base and its modifiers. At the output, it predicts the base token and then, conditioned on it, each modifier. The transformer is unchanged, and the roughly 100 English modifiers add under 0.1% to the parameter count.</p>
 
-        <div class="card scroll-x" style="margin-top:22px">
-            <table class="ladder">
-                <thead>
-                    <tr><th>Text</th><th>BPE tokens</th><th>#</th><th>CoBPE compound token</th><th>#</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td class="text">ground</td><td><div class="chips"><span class="chip">ground</span></div></td><td class="n bpe">1</td>
-                        <td><div class="chips"><span class="chip base">ground</span></div></td><td class="n co">1</td></tr>
-                    <tr><td class="text">the ground</td><td><div class="chips"><span class="chip">the</span><span class="chip">_ground</span></div></td><td class="n bpe">2</td>
-                        <td><div class="chips"><span class="chip base">ground</span><span class="chip det tag">det: the</span></div></td><td class="n co">1</td></tr>
-                    <tr><td class="text">_The ground</td><td><div class="chips"><span class="chip">_The</span><span class="chip">_ground</span></div></td><td class="n bpe">2</td>
-                        <td><div class="chips"><span class="chip base">ground</span><span class="chip space tag">_</span><span class="chip det tag">det: the</span><span class="chip cap tag">cap: det</span></div></td><td class="n co">1</td></tr>
-                    <tr><td class="text">_The Ground</td><td><div class="chips"><span class="chip">_The</span><span class="chip">_Ground</span></div></td><td class="n bpe">2</td>
-                        <td><div class="chips"><span class="chip base">ground</span><span class="chip space tag">_</span><span class="chip cap tag">cap</span><span class="chip det tag">det: the</span><span class="chip cap tag">cap: det</span></div></td><td class="n co">1</td></tr>
-                    <tr><td class="text">In the ground</td><td><div class="chips"><span class="chip">In</span><span class="chip">_the</span><span class="chip">_ground</span></div></td><td class="n bpe">3</td>
-                        <td><div class="chips"><span class="chip base">ground</span><span class="chip prep tag">prep: in</span><span class="chip cap tag">cap: prep</span><span class="chip det tag">det: the</span></div></td><td class="n co">1</td></tr>
-                    <tr><td class="text">in the ground,</td><td><div class="chips"><span class="chip">in</span><span class="chip">_the</span><span class="chip">_ground</span><span class="chip">,</span></div></td><td class="n bpe">4</td>
-                        <td><div class="chips"><span class="chip base">ground</span><span class="chip prep tag">prep: in</span><span class="chip det tag">det: the</span><span class="chip punct tag">suffix: ,</span></div></td><td class="n co">1</td></tr>
-                    <tr><td class="text">(in the ground)</td><td><div class="chips"><span class="chip">(</span><span class="chip">in</span><span class="chip">_the</span><span class="chip">_ground</span><span class="chip">)</span></div></td><td class="n bpe">5</td>
-                        <td><div class="chips"><span class="chip base">ground</span><span class="chip punct tag">prefix: (</span><span class="chip prep tag">prep: in</span><span class="chip det tag">det: the</span><span class="chip punct tag">suffix: )</span></div></td><td class="n co">1</td></tr>
-                </tbody>
-            </table>
-            <p class="small muted" style="margin:12px 0 0">BPE needs 1–5 tokens and several different spellings of <code>ground</code>; CoBPE keeps one base and varies only its modifiers. <code>_</code> marks a leading space. Paper Table 1.</p>
-        </div>
-
-        <div class="card" style="margin-top:18px">
-            <p class="quote">“In a hole in the ground, there lived a hobbit. Not a dirty, wet hole, …”</p>
-            <div class="sentence">
-                <div class="row-label">BPE <span>· 18 tokens, 9 of them grammatical markers</span></div>
-                <div class="chips">
-                    <span class="chip prep">In</span><span class="chip det">_a</span><span class="chip">_hole</span><span class="chip prep">_in</span><span class="chip det">_the</span><span class="chip">_ground</span><span class="chip punct">,</span><span class="chip">_there</span><span class="chip">_lived</span><span class="chip det">_a</span><span class="chip">_hob</span><span class="chip">bit</span><span class="chip punct">.</span><span class="chip">_Not</span><span class="chip det">_a</span><span class="chip">_dirty</span><span class="chip punct">,</span><span class="chip">_wet</span>
-                </div>
-                <div class="row-label" style="color:var(--accent)">CoBPE <span>· 9 compound tokens: a base plus its modifiers</span></div>
-                <div class="compounds">
-                    <div class="compound"><span class="chip base">hole</span><span class="chip prep tag">prep: in</span><span class="chip cap tag">cap: prep</span><span class="chip det tag">det: a</span></div>
-                    <div class="compound"><span class="chip base">ground</span><span class="chip space tag">_</span><span class="chip prep tag">prep: in</span><span class="chip det tag">det: the</span><span class="chip punct tag">suffix: ,</span></div>
-                    <div class="compound"><span class="chip base">there</span><span class="chip space tag">_</span></div>
-                    <div class="compound"><span class="chip base">lived</span><span class="chip space tag">_</span></div>
-                    <div class="compound"><span class="chip base">hob</span><span class="chip space tag">_</span><span class="chip det tag">det: a</span></div>
-                    <div class="compound"><span class="chip base">bit</span><span class="chip punct tag">suffix: .</span></div>
-                    <div class="compound"><span class="chip base">not</span><span class="chip space tag">_</span><span class="chip cap tag">cap</span></div>
-                    <div class="compound"><span class="chip base">dirty</span><span class="chip space tag">_</span><span class="chip det tag">det: a</span><span class="chip punct tag">suffix: ,</span></div>
-                    <div class="compound"><span class="chip base">wet</span><span class="chip space tag">_</span></div>
-                </div>
-                <div class="legend"><b>Modifier groups</b><span class="chip space tag">leading space</span><span class="chip cap tag">capitalization</span><span class="chip det tag">determiner</span><span class="chip prep tag">preposition</span><span class="chip punct tag">punctuation</span></div>
-            </div>
-            <p class="small muted" style="margin:14px 0 0">Attachment is local, not syntactic: a multi-token word like <code>hob|bit</code> takes its leading markers on the first piece and its punctuation on the last. Paper Figure 1.</p>
-        </div>
-
-        <div class="narrow" style="margin:28px auto 0">
-            <p><b>The vocabulary gets cleaner too.</b> In a 32k BPE vocabulary, 27% of entries are capitalized or space-prefixed variants (<span class="chip tag">table</span> <span class="chip tag">Table</span> <span class="chip tag">_table</span> <span class="chip tag">_Table</span>), each with its own embedding. In CoBPE they are one base, <span class="chip base tag">table</span>, and the freed slots go to new words.</p>
-        </div>
-    </div>
-</section>
-
-<section class="block" id="method">
-    <div class="wrap">
-        <div class="narrow" style="margin:0 auto">
-            <p class="kicker">3 · The model</p>
-            <h2>One compound token per step</h2>
-            <p class="lead">Only the way tokens go in and out of the model changes. The transformer in between is standard.</p>
-        </div>
+    <figure>
         <ol class="stages">
             <li class="stage">
-                <div class="stage-head"><span class="n">1</span> Tokenize</div>
+                <div class="stage-head">(1) Tokenize</div>
                 <div class="stage-body">
-                    <p class="quote" style="margin:0;font-size:1.05rem">On the table.</p>
-                    <div class="down">BPE ↓</div>
+                    <div class="quote" style="margin:0;font-size:1rem">On the table.</div>
+                    <div class="small-label">BPE ↓</div>
                     <div class="chips" style="justify-content:center"><span class="chip tag">On</span><span class="chip tag">_the</span><span class="chip tag">_table</span><span class="chip tag">.</span></div>
-                    <div class="down">attach modifiers ↓</div>
+                    <div class="small-label">attach modifiers ↓</div>
                     <div class="compound-mini">
                         <span class="chip base">table</span>
                         <span class="chip prep tag">prep: On</span>
@@ -233,10 +135,9 @@
                         <span class="chip punct tag">suffix: .</span>
                     </div>
                 </div>
-                <p class="stage-note">Ordinary BPE, then one left-to-right pass attaches each marker to its neighbor.</p>
             </li>
             <li class="stage">
-                <div class="stage-head"><span class="n">2</span> Embed and sum</div>
+                <div class="stage-head">(2) Embed</div>
                 <div class="stage-body">
                     <div class="sum-row">
                         <div class="emb"><span class="chip base tag">table</span><i class="vec base"></i></div><b>+</b>
@@ -244,219 +145,124 @@
                         <div class="emb"><span class="chip det tag">the</span><i class="vec det"></i></div><b>+</b>
                         <div class="emb"><span class="chip punct tag">.</span><i class="vec punct"></i></div>
                     </div>
-                    <div class="down">↓</div>
+                    <div class="small-label">↓</div>
                     <i class="vec mix"></i>
-                    <div class="down" style="margin-top:4px">one input position</div>
+                    <div class="small-label">one input position</div>
                 </div>
-                <p class="stage-note">Base embedding plus one embedding per active modifier.</p>
             </li>
             <li class="stage">
-                <div class="stage-head"><span class="n">3</span> Standard transformer</div>
+                <div class="stage-head">(3) Transformer</div>
                 <div class="stage-body">
-                    <img src="images/robot.svg" alt="" width="84" height="84">
+                    <img src="images/robot.svg" alt="" width="76" height="76">
+                    <div class="small-label">unchanged</div>
                 </div>
-                <p class="stage-note">Unchanged backbone: one forward pass per compound token, and 30% fewer of them.</p>
             </li>
             <li class="stage">
-                <div class="stage-head"><span class="n">4</span> Predict base, then modifiers</div>
+                <div class="stage-head">(4) Predict</div>
                 <div class="stage-body">
                     <div class="heads">
-                        <div class="head">
-                            <div class="head-label">A · base head</div>
-                            <div class="bars">
-                                <span style="height:44px;background:var(--accent-bar)"></span><span style="height:12px"></span><span style="height:8px"></span>
-                            </div>
+                        <div class="head base">
+                            <div class="head-label">base</div>
+                            <div class="bars"><span style="height:42px;background:var(--accent-bar)"></span><span style="height:12px"></span><span style="height:8px"></span></div>
                             <div class="bar-labels"><span>table</span><span>chair</span><span>floor</span></div>
                         </div>
                         <div class="head">
-                            <div class="head-label">B · modifier head <span class="muted">(given <code>table</code>)</span></div>
-                            <div class="bars groups">
-                                <span style="height:36px;background:var(--prep-edge)"></span><span style="height:8px"></span>
-                                <i></i>
-                                <span style="height:36px;background:var(--det-edge)"></span><span style="height:8px"></span>
-                                <i></i>
+                            <div class="head-label">modifiers, given <code>table</code></div>
+                            <div class="bars">
+                                <span style="height:36px;background:var(--prep-edge)"></span><span style="height:8px"></span><i></i>
+                                <span style="height:36px;background:var(--det-edge)"></span><span style="height:8px"></span><i></i>
                                 <span style="height:34px;background:var(--punct-edge)"></span><span style="height:9px"></span>
                             </div>
-                            <div class="bar-labels groups"><span>On</span><span>none</span><i></i><span>the</span><span>a</span><i></i><span>.</span><span>none</span></div>
+                            <div class="bar-labels"><span>On</span><span>none</span><i></i><span>the</span><span>a</span><i></i><span>.</span><span>none</span></div>
                         </div>
                     </div>
-                    <div class="down" style="margin-top:8px">= <b>On the table.</b> in one step</div>
+                    <div class="small-label" style="margin-top:6px">→ “On the table.” in one step</div>
                 </div>
-                <p class="stage-note">The base first; then, conditioned on it, one small softmax per modifier group.</p>
             </li>
         </ol>
-        <p class="small muted narrow" style="margin:14px auto 0">About 100 modifiers in 8 groups cover English, and together they add under 0.1% to the model's parameters. Head equations and training objective: paper §3.3.</p>
+        <figcaption>(1) BPE tokens are grouped into a compound token. (2) Its input embedding is the sum of the base and modifier embeddings. (3) A standard transformer processes the sequence. (4) The model predicts the next base, then each modifier group conditioned on that base.</figcaption>
+    </figure>
+
+    <h2>Results</h2>
+    <p>We pretrain 780M and 1.3B models from scratch on English, changing only the tokenizer and keeping the architecture, training recipe, 32k vocabulary size and number of training tokens fixed. CoBPE shortens sequences by 30% (SuperBPE: 15%) and improves the 30-task average by 1.2 points at 780M and 1.3 points at 1.3B, while SuperBPE matches BPE. Because the token budget is matched, CoBPE models also see more raw text.</p>
+
+    <div class="charts">
+        <figure>
+            <p class="chart-title">Relative sequence length</p>
+            <svg class="chart" viewBox="0 0 440 128" role="img" aria-label="Relative sequence length: BPE 1.00, SuperBPE 0.85, CoBPE 0.70">
+                <text x="0" y="27" font-size="14">BPE</text>
+                <rect x="120" y="12" width="260" height="22" fill="#b7bdc3"/>
+                <text x="388" y="28" font-size="14" class="muted">1.00</text>
+                <text x="0" y="67" font-size="14">SuperBPE</text>
+                <rect x="120" y="52" width="221" height="22" fill="#7b858f"/>
+                <text x="349" y="68" font-size="14" class="muted">0.85</text>
+                <text x="0" y="109" font-size="14" font-weight="700" class="co">CoBPE</text>
+                <rect x="120" y="94" width="182" height="22" fill="#e23f93"/>
+                <text x="310" y="110" font-size="14" font-weight="700" class="co">0.70</text>
+            </svg>
+        </figure>
+        <figure>
+            <p class="chart-title">30-task average</p>
+            <svg class="chart" viewBox="0 0 440 156" role="img" aria-label="30-task average. 780M: BPE 30.4, SuperBPE 30.4, CoBPE 31.6. 1.3B: BPE 33.3, CoBPE 34.6.">
+                <line class="grid" x1="90" y1="10" x2="90" y2="128"/><line class="grid" x1="145" y1="10" x2="145" y2="128"/><line class="grid" x1="200" y1="10" x2="200" y2="128"/><line class="grid" x1="255" y1="10" x2="255" y2="128"/><line class="grid" x1="310" y1="10" x2="310" y2="128"/><line class="grid" x1="365" y1="10" x2="365" y2="128"/><line class="grid" x1="420" y1="10" x2="420" y2="128"/>
+                <line class="axis" x1="90" y1="128" x2="420" y2="128"/>
+                <g font-size="12" text-anchor="middle"><text x="90" y="145" class="muted">29</text><text x="145" y="145" class="muted">30</text><text x="200" y="145" class="muted">31</text><text x="255" y="145" class="muted">32</text><text x="310" y="145" class="muted">33</text><text x="365" y="145" class="muted">34</text><text x="420" y="145" class="muted">35</text></g>
+                <text x="0" y="52" font-size="14">780M</text>
+                <line x1="167" y1="47" x2="233" y2="47" stroke="#e23f93" stroke-width="2"/>
+                <circle cx="167" cy="47" r="6" fill="#7b858f"/>
+                <rect x="226" y="40" width="14" height="14" fill="#e23f93" transform="rotate(45 233 47)"/>
+                <text x="167" y="30" font-size="12" text-anchor="middle" class="muted">BPE 30.4</text>
+                <text x="233" y="30" font-size="12" text-anchor="middle" class="co" font-weight="700">CoBPE 31.6</text>
+                <rect x="163" y="64" width="8" height="8" fill="#b7bdc3"/>
+                <text x="157" y="72" font-size="11" text-anchor="end" class="muted">SuperBPE 30.4</text>
+                <text x="0" y="107" font-size="14">1.3B</text>
+                <line x1="326.5" y1="102" x2="398" y2="102" stroke="#e23f93" stroke-width="2"/>
+                <circle cx="326.5" cy="102" r="6" fill="#7b858f"/>
+                <rect x="391" y="95" width="14" height="14" fill="#e23f93" transform="rotate(45 398 102)"/>
+                <text x="326.5" y="85" font-size="12" text-anchor="middle" class="muted">BPE 33.3</text>
+                <text x="398" y="85" font-size="12" text-anchor="middle" class="co" font-weight="700">CoBPE 34.6</text>
+            </svg>
+        </figure>
     </div>
-</section>
 
-<section class="block tinted" id="results">
-    <div class="wrap">
-        <div class="narrow" style="margin:0 auto">
-            <p class="kicker">4 · Results</p>
-            <h2>Shorter sequences, better models</h2>
-            <p class="lead">We pretrain 780M and 1.3B models from scratch on English (ClimbMix), holding the architecture, recipe, 32k vocabulary size and token budget fixed, and change only the tokenizer.</p>
-        </div>
+    <p style="margin-top:24px">Shorter sequences also make CoBPE faster end to end. On the nanochat speedrun, it reaches GPT-2-level performance in 6.45 hours instead of 7.92 (1.23× faster). When generating the same text, it takes 32.5% fewer steps and is 1.28× faster, even though each step is slightly slower.</p>
 
-        <div class="two">
-            <div class="card">
-                <p class="chart-title"><span class="co">30%</span> shorter sequences</p>
-                <p class="chart-sub">Relative sequence length, 32k vocabulary</p>
-                <svg class="chart" viewBox="0 0 440 128" role="img" aria-label="Relative sequence length: BPE 1.00, SuperBPE 0.85, CoBPE 0.70">
-                    <text x="0" y="27" font-size="14">BPE</text>
-                    <rect x="120" y="12" width="260" height="22" rx="3" fill="#b7bdc3"/>
-                    <text x="388" y="28" font-size="14" class="muted" font-weight="700">1.00</text>
-                    <text x="0" y="67" font-size="14">SuperBPE</text>
-                    <text x="0" y="82" font-size="11" class="muted">t = 27k</text>
-                    <rect x="120" y="52" width="221" height="22" rx="3" fill="#7b858f"/>
-                    <text x="349" y="68" font-size="14" class="muted" font-weight="700">0.85</text>
-                    <text x="0" y="111" font-size="14" font-weight="700" class="co">CoBPE</text>
-                    <rect x="120" y="94" width="182" height="22" rx="3" fill="#e23f93"/>
-                    <text x="310" y="110" font-size="14" class="co" font-weight="800">0.70</text>
-                </svg>
-            </div>
-            <div class="card">
-                <p class="chart-title"><span class="co">+1.2</span> points downstream</p>
-                <p class="chart-sub">30-task average (SuperBPE's evaluation suite), matched training compute</p>
-                <svg class="chart" viewBox="0 0 440 160" role="img" aria-label="30-task average. 780M: BPE 30.4, SuperBPE 30.4, CoBPE 31.6. 1.3B: BPE 33.3, CoBPE 34.6.">
-                    <line class="grid" x1="90" y1="10" x2="90" y2="128"/><line class="grid" x1="145" y1="10" x2="145" y2="128"/><line class="grid" x1="200" y1="10" x2="200" y2="128"/><line class="grid" x1="255" y1="10" x2="255" y2="128"/><line class="grid" x1="310" y1="10" x2="310" y2="128"/><line class="grid" x1="365" y1="10" x2="365" y2="128"/><line class="grid" x1="420" y1="10" x2="420" y2="128"/>
-                    <line class="axis" x1="90" y1="128" x2="420" y2="128"/>
-                    <g font-size="12" text-anchor="middle"><text x="90" y="145" class="muted">29</text><text x="145" y="145" class="muted">30</text><text x="200" y="145" class="muted">31</text><text x="255" y="145" class="muted">32</text><text x="310" y="145" class="muted">33</text><text x="365" y="145" class="muted">34</text><text x="420" y="145" class="muted">35</text></g>
-                    <text x="0" y="52" font-size="14" font-weight="700">780M</text>
-                    <line x1="167.0" y1="47" x2="233.0" y2="47" stroke="#e23f93" stroke-width="2"/>
-                    <circle cx="167.0" cy="47" r="6" fill="#7b858f"/>
-                    <rect x="226.0" y="40" width="14" height="14" fill="#e23f93" transform="rotate(45 233.0 47)"/>
-                    <text x="167.0" y="30" font-size="12" text-anchor="middle" class="muted">BPE 30.4</text>
-                    <text x="233.0" y="30" font-size="12" text-anchor="middle" class="co" font-weight="700">CoBPE 31.6</text>
-                    <text x="200.0" y="67" font-size="14" text-anchor="middle" class="co" font-weight="800">+1.2</text>
-                    <rect x="163.0" y="64" width="8" height="8" fill="#b7bdc3"/>
-                    <text x="157.0" y="72" font-size="11" text-anchor="end" class="muted">SuperBPE 30.4</text>
-                    <text x="0" y="107" font-size="14" font-weight="700">1.3B</text>
-                    <line x1="326.5" y1="102" x2="398.0" y2="102" stroke="#e23f93" stroke-width="2"/>
-                    <circle cx="326.5" cy="102" r="6" fill="#7b858f"/>
-                    <rect x="391.0" y="95" width="14" height="14" fill="#e23f93" transform="rotate(45 398.0 102)"/>
-                    <text x="326.5" y="85" font-size="12" text-anchor="middle" class="muted">BPE 33.3</text>
-                    <text x="398.0" y="85" font-size="12" text-anchor="middle" class="co" font-weight="700">CoBPE 34.6</text>
-                    <text x="362.25" y="122" font-size="14" text-anchor="middle" class="co" font-weight="800">+1.3</text>
-                </svg>
-            </div>
-        </div>
-        <p class="small muted narrow" style="margin:12px auto 0">Each model trains on 20 tokens per parameter (15.6B / 26B tokens), so compute is matched, but CoBPE covers about 1.4× more raw text in the same number of tokens. Full per-task results are in the paper (Table 2).</p>
-
-        <div class="two" style="margin-top:28px">
-            <div class="card">
-                <p class="chart-title"><span class="co">1.28×</span> faster generation</p>
-                <p class="chart-sub">Seconds to generate the same text (1.3B models, copying CNN/DailyMail passages)</p>
-                <svg class="chart" viewBox="0 0 440 104" role="img" aria-label="Generation time: BPE 1.94 seconds over 121 steps, CoBPE 1.51 seconds over 82 steps">
-                    <text x="0" y="28" font-size="14">BPE</text>
-                    <rect x="70" y="12" width="250" height="24" rx="3" fill="#b7bdc3"/>
-                    <text x="328" y="28" font-size="14" font-weight="700" class="muted">1.94 s</text>
-                    <text x="328" y="42" font-size="10.5" class="muted">121 steps × 16.1 ms</text>
-                    <text x="0" y="78" font-size="14" font-weight="700" class="co">CoBPE</text>
-                    <rect x="70" y="62" width="195" height="24" rx="3" fill="#e23f93"/>
-                    <text x="273" y="78" font-size="14" font-weight="800" class="co">1.51 s</text>
-                    <text x="273" y="92" font-size="10.5" class="muted">82 steps × 18.6 ms</text>
-                </svg>
-            </div>
-            <div class="card">
-                <p class="chart-title"><span class="co">1.23×</span> faster training</p>
-                <p class="chart-sub">Hours to GPT-2-level quality on the nanochat speedrun (8× L40S)</p>
-                <svg class="chart" viewBox="0 0 440 104" role="img" aria-label="Training time to target: BPE 7.92 hours on 5.84B tokens, CoBPE 6.45 hours on 4.74B tokens">
-                    <text x="0" y="28" font-size="14">BPE</text>
-                    <rect x="70" y="12" width="250" height="24" rx="3" fill="#b7bdc3"/>
-                    <text x="328" y="28" font-size="14" font-weight="700" class="muted">7.92 h</text>
-                    <text x="328" y="42" font-size="10.5" class="muted">5.84B tokens</text>
-                    <text x="0" y="78" font-size="14" font-weight="700" class="co">CoBPE</text>
-                    <rect x="70" y="62" width="204" height="24" rx="3" fill="#e23f93"/>
-                    <text x="282" y="78" font-size="14" font-weight="800" class="co">6.45 h</text>
-                    <text x="282" y="92" font-size="10.5" class="muted">4.74B tokens</text>
-                </svg>
-            </div>
-        </div>
-        <p class="small muted narrow" style="margin:12px auto 0">Each CoBPE step costs a little more (it also predicts modifiers), but 32.5% fewer steps more than make up for it. Speedrun times are comparable within our setup, not with the public H100 leaderboard.</p>
+    <div class="charts">
+        <figure>
+            <p class="chart-title">Generation time (s)</p>
+            <svg class="chart" viewBox="0 0 440 96" role="img" aria-label="Generation time: BPE 1.94 seconds, CoBPE 1.51 seconds">
+                <text x="0" y="28" font-size="14">BPE</text>
+                <rect x="70" y="12" width="250" height="24" fill="#b7bdc3"/>
+                <text x="328" y="29" font-size="14" class="muted">1.94</text>
+                <text x="0" y="74" font-size="14" font-weight="700" class="co">CoBPE</text>
+                <rect x="70" y="58" width="195" height="24" fill="#e23f93"/>
+                <text x="273" y="75" font-size="14" font-weight="700" class="co">1.51</text>
+            </svg>
+        </figure>
+        <figure>
+            <p class="chart-title">Training time to GPT-2 level (h)</p>
+            <svg class="chart" viewBox="0 0 440 96" role="img" aria-label="Training time to target: BPE 7.92 hours, CoBPE 6.45 hours">
+                <text x="0" y="28" font-size="14">BPE</text>
+                <rect x="70" y="12" width="250" height="24" fill="#b7bdc3"/>
+                <text x="328" y="29" font-size="14" class="muted">7.92</text>
+                <text x="0" y="74" font-size="14" font-weight="700" class="co">CoBPE</text>
+                <rect x="70" y="58" width="204" height="24" fill="#e23f93"/>
+                <text x="282" y="75" font-size="14" font-weight="700" class="co">6.45</text>
+            </svg>
+        </figure>
     </div>
-</section>
 
-<section class="block" id="more">
-    <div class="wrap">
-        <div class="narrow" style="margin:0 auto">
-            <p class="kicker">5 · More in the paper</p>
-            <h2>Many more results &amp; analyses</h2>
-        </div>
-        <div class="two" style="align-items:center">
-            <figure style="margin:0">
-                <img src="images/compression.png" alt="Bytes per token against vocabulary size: BPE lowest; adding space and case modifiers, then determiners and prepositions, then punctuation (full CoBPE) each raise it." loading="lazy">
-            </figure>
-            <div>
-                <p class="chart-title"><span class="co">~1.4×</span> more text per token</p>
-                <p>At every vocabulary size. Space and case modifiers help most at small vocabularies; determiners, prepositions and punctuation add large, steady gains on top. <span class="muted small">(Paper Figure 1.)</span></p>
-            </div>
-        </div>
-        <div class="more" style="margin-top:22px">
-            <div class="card">
-                <div class="big">18–32%</div>
-                <h3>shorter beyond English</h3>
-                <p>Spanish 31.8%, German 21.2%, Hindi 20.8%, Indonesian 18.0%, with modifier inventories extracted automatically from Universal Dependencies (compression only; no pretraining yet).</p>
-            </div>
-            <div class="card">
-                <div class="big">&lt;0.1%</div>
-                <h3>extra parameters</h3>
-                <p>The ~100 English modifiers need about 0.5M parameters for embeddings and prediction.</p>
-            </div>
-            <div class="card">
-                <div class="big">+</div>
-                <h3>complementary to SuperBPE</h3>
-                <p>Multi-word tokens could cover phrases that modifiers can't express. And what else could live inside a modifier: morphology, more languages?</p>
-            </div>
-        </div>
-    </div>
-</section>
+    <p style="margin-top:24px">The paper also reports compression across vocabulary sizes, 18–32% shorter sequences in Spanish, German, Hindi and Indonesian, and per-task results, including the tasks most sensitive to tokenization (LAMBADA and Dyck languages).</p>
 
-<section class="block tinted" id="resources">
-    <div class="wrap">
-        <div class="narrow" style="margin:0 auto">
-            <p class="kicker">6 · Use it</p>
-            <h2>Paper, code and models</h2>
-        </div>
-        <div class="resources" style="margin-top:18px">
-            <a class="card resource" href="https://arxiv.org/abs/2610.05597">
-                <i class="ai ai-arxiv icon"></i>
-                <h3>Paper</h3>
-                <p>arXiv:2610.05597 · COLM 2026</p>
-            </a>
-            <a class="card resource" href="https://github.com/schwartz-lab-NLP/cobpe">
-                <i class="fab fa-github icon"></i>
-                <h3>Code</h3>
-                <p>Tokenizer (Rust runtime), model integration, and the scripts for every paper run.</p>
-            </a>
-            <div class="card resource soon">
-                <i class="fas fa-cube icon"></i>
-                <h3>Models <span class="badge">coming soon</span></h3>
-                <p>Trained model weights will be released here.</p>
-            </div>
-        </div>
-        <div class="narrow" style="margin:24px auto 0">
-            <p style="margin-bottom:0">Install and check the tokenizer runtime (CPU; use <code>--extra gpu</code> for CUDA):</p>
-            <div class="code-wrap">
-<pre><code>git clone https://github.com/schwartz-lab-NLP/cobpe && cd cobpe
+    <h2>Code and models</h2>
+    <p>The <a href="https://github.com/schwartz-lab-NLP/cobpe">code</a> includes the tokenizer, the model changes, and scripts to reproduce the paper's experiments. Model weights are coming soon.</p>
+<pre><code>git clone https://github.com/schwartz-lab-NLP/cobpe
+cd cobpe
 uv sync --locked --extra cpu
 uv run --locked --extra cpu python -m cobpe check-install</code></pre>
-            </div>
-            <p class="small muted" style="margin-top:8px">The <a href="https://github.com/schwartz-lab-NLP/cobpe#readme">README</a> covers training tokenizers, inspecting tokenizations, and reproducing the paper runs.</p>
 
-            <details class="abstract">
-                <summary>Abstract</summary>
-                <p>Language models process and generate text sequentially in <em>token</em> units, and the tokenizer determines how much text each inference step covers. Under standard tokenization, a short English phrase such as “On the table.” is usually produced as four separate predictions for the preposition (<em>On</em>), article (<em>the</em>), noun (<em>table</em>), and punctuation (<em>.</em>), where each consumes a sequence position and adds inference cost. We introduce CoBPE, a compositional tokenization approach that represents such phrases as a lexical base token (<em>table</em>) attached with a small set of reusable surface modifiers, composed in embedding space at input and predicted jointly at output. In controlled pretraining from scratch at 780M and 1.3B scales, CoBPE shortens sequences by 30% and improves average downstream performance by 1.2 points relative to standard BPE under matched training compute. Our results suggest that part of what is now expressed through token sequences can instead be modeled through structured representations, opening a broad design space for more token-efficient and capable language models.</p>
-            </details>
-        </div>
-    </div>
-</section>
-
-<section class="block" id="citation">
-    <div class="wrap narrow">
-        <h2>Citation</h2>
-        <div class="code-wrap">
-            <button class="copy" type="button" data-target="bibtex">Copy</button>
-<pre id="bibtex"><code>@inproceedings{reif2026morethanwords,
+    <h2 id="citation">Citation</h2>
+<pre><code>@inproceedings{reif2026morethanwords,
   title     = {More Than Words: Compositional Tokenization for
                Efficient Language Models},
   author    = {Reif, Yuval and Kaplan, Guy and Schwartz, Roy},
@@ -464,26 +270,11 @@ uv run --locked --extra cpu python -m cobpe check-install</code></pre>
   year      = {2026},
   url       = {https://arxiv.org/abs/2610.05597}
 }</code></pre>
-        </div>
-    </div>
-</section>
+</main>
 
 <footer>
-    <div class="wrap">
-        Research from the <a href="https://schwartz-lab-huji.github.io/">Schwartz Lab</a> at the Hebrew University of Jerusalem.
-    </div>
+    Research from the <a href="https://schwartz-lab-huji.github.io/">Schwartz Lab</a> at the Hebrew University of Jerusalem.
 </footer>
 
-<script>
-document.querySelectorAll('.copy').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-        var text = document.getElementById(btn.dataset.target).innerText;
-        navigator.clipboard.writeText(text).then(function () {
-            btn.textContent = 'Copied';
-            setTimeout(function () { btn.textContent = 'Copy'; }, 1500);
-        });
-    });
-});
-</script>
 </body>
 </html>
